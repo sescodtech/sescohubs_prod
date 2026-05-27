@@ -1,6 +1,6 @@
 import express from 'express';
-import { WalletController } from '../controllers\WalletController';
-import { protect } from '../middlewares\authMiddleware';
+import { WalletController } from '../controllers/WalletController';
+import { protect } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 

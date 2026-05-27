@@ -1,7 +1,7 @@
 import express from 'express';
-import { TenantAdminController } from '../controllers\TenantAdminController';
-import { protect } from '../middlewares\authMiddleware';
-import { authorize } from '../middlewares\authMiddleware';
+import { TenantAdminController } from '../controllers/TenantAdminController';
+import { protect } from '../middlewares/authMiddleware';
+import { authorize } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 

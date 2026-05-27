@@ -1,7 +1,7 @@
 import express from 'express';
-import { SuperAdminController } from '../controllers\SuperAdminController';
-import { protect } from '../middlewares\authMiddleware';
-import { authorize } from '../middlewares\authMiddleware';
+import { SuperAdminController } from '../controllers/SuperAdminController';
+import { protect } from '../middlewares/authMiddleware';
+import { authorize } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
