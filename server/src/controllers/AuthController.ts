@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { AuthService } from '../services\AuthService';
-import { User } from '../models\User';
+import { AuthService } from '../services/AuthService';
+import { User } from '../models/User';
 
 export class AuthController {
   static async register(req: Request, res: Response) {

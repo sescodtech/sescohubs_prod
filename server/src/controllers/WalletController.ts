@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { WalletService } from '../services\WalletService';
-import { Transaction } from '../models\Transaction';
-import { User } from '../models\User';
+import { WalletService } from '../services/WalletService';
+import { Transaction } from '../models/Transaction';
+import { User } from '../models/User';
 
 export class WalletController {
   /**

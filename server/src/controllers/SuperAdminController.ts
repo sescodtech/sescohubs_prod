@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Tenant } from '../models\Tenant';
-import { User } from '../models\User';
+import { Tenant } from '../models/Tenant';
+import { User } from '../models/User';
 
 export class SuperAdminController {
   /**

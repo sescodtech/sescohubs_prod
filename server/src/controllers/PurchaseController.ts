@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { WalletService } from '../services\WalletService';
-import { providerOrchestrator } from '../providers\ProviderOrchestrator';
-import { Transaction } from '../models\Transaction';
-import { User } from '../models\User';
+import { WalletService } from '../services/WalletService';
+import { providerOrchestrator } from '../providers/ProviderOrchestrator';
+import { Transaction } from '../models/Transaction';
+import { User } from '../models/User';
 
 export class PurchaseController {
   static async buyData(req: any, res: Response) {
