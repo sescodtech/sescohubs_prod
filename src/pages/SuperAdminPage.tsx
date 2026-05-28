@@ -20,7 +20,18 @@ export default function SuperAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newTenant, setNewTenant] = useState({ name: '', slug: '', primaryColor: '#ef4444', secondaryColor: '#b91c1c' });
+  const [newTenant, setNewTenant] = useState({
+    name: '',
+    slug: '',
+    primaryColor: '#ef4444',
+    secondaryColor: '#b91c1c',
+    adminUser: {
+      name: '',
+      email: '',
+      password: '',
+      phone: ''
+    }
+  });
 
   useEffect(() => {
     fetchTenants();
@@ -55,7 +66,13 @@ export default function SuperAdminPage() {
       await admin.createTenant(newTenant);
       toast.success('Tenant created successfully');
       setIsCreateModalOpen(false);
-      setNewTenant({ name: '', slug: '', primaryColor: '#ef4444', secondaryColor: '#b91c1c' });
+      setNewTenant({
+        name: '',
+        slug: '',
+        primaryColor: '#ef4444',
+        secondaryColor: '#b91c1c',
+        adminUser: { name: '', email: '', password: '', phone: '' }
+      });
       await fetchTenants();
     } catch (e: any) {
       toast.error(`Creation failed: ${e.message}`);
@@ -421,14 +438,14 @@ export default function SuperAdminPage() {
                     </button>
                     {selectedTenant.status === 'Active' ? (
                        <button
-                         onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'Suspended' })}
+                         onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'suspended' })}
                          className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100 hover:bg-red-700 transition-all flex items-center justify-center gap-2"
                        >
                           <XCircle size={16} /> Suspend Tenant
                        </button>
                     ) : (
                        <button
-                         onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'Active' })}
+                         onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'active' })}
                          className="flex-1 py-4 bg-green-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center justify-center gap-2"
                        >
                           <CheckCircle2 size={16} /> Reactivate Tenant
@@ -455,64 +472,117 @@ export default function SuperAdminPage() {
                  </button>
               </div>
               <form onSubmit={handleCreateTenant} className="p-10 space-y-6">
-                 <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Platform Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={newTenant.name}
-                      onChange={e => setNewTenant({ ...newTenant, name: e.target.value })}
-                      placeholder="e.g. SwiftVtu"
-                      className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
-                    />
-                 </div>
-                 <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Subdomain (Slug)</label>
-                    <input
-                      type="text"
-                      required
-                      value={newTenant.slug}
-                      onChange={e => setNewTenant({ ...newTenant, slug: e.target.value })}
-                      placeholder="e.g. swiftvtu"
-                      className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
-                    />
-                 </div>
-                 <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-4">
+                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Platform Details</h4>
                     <div className="space-y-1">
-                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Primary Color</label>
-                       <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={newTenant.primaryColor}
-                            onChange={e => setNewTenant({ ...newTenant, primaryColor: e.target.value })}
-                            className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
-                          />
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Platform Name</label>
+                       <input
+                         type="text"
+                         required
+                         value={newTenant.name}
+                         onChange={e => setNewTenant({ ...newTenant, name: e.target.value })}
+                         placeholder="e.g. SwiftVtu"
+                         className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                       />
+                    </div>
+                    <div className="space-y-1">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Subdomain (Slug)</label>
+                       <input
+                         type="text"
+                         required
+                         value={newTenant.slug}
+                         onChange={e => setNewTenant({ ...newTenant, slug: e.target.value })}
+                         placeholder="e.g. swiftvtu"
+                         className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                       />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-1">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Primary Color</label>
+                          <div className="flex items-center gap-2">
+                             <input
+                               type="color"
+                               value={newTenant.primaryColor}
+                               onChange={e => setNewTenant({ ...newTenant, primaryColor: e.target.value })}
+                               className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
+                             />
+                             <input
+                               type="text"
+                               value={newTenant.primaryColor}
+                               onChange={e => setNewTenant({ ...newTenant, primaryColor: e.target.value })}
+                               className="flex-1 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs font-mono"
+                             />
+                          </div>
+                       </div>
+                       <div className="space-y-1">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Secondary Color</label>
+                          <div className="flex items-center gap-2">
+                             <input
+                               type="color"
+                               value={newTenant.secondaryColor}
+                               onChange={e => setNewTenant({ ...newTenant, secondaryColor: e.target.value })}
+                               className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
+                             />
+                             <input
+                               type="text"
+                               value={newTenant.secondaryColor}
+                               onChange={e => setNewTenant({ ...newTenant, secondaryColor: e.target.value })}
+                               className="flex-1 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs font-mono"
+                             />
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="space-y-4 border-t border-gray-50 pt-6">
+                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Initial Admin Account</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div className="space-y-1">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
                           <input
                             type="text"
-                            value={newTenant.primaryColor}
-                            onChange={e => setNewTenant({ ...newTenant, primaryColor: e.target.value })}
-                            className="flex-1 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs font-mono"
+                            required
+                            value={newTenant.adminUser.name}
+                            onChange={e => setNewTenant({ ...newTenant, adminUser: { ...newTenant.adminUser, name: e.target.value } })}
+                            placeholder="Admin Name"
+                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                          />
+                       </div>
+                       <div className="space-y-1">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
+                          <input
+                            type="email"
+                            required
+                            value={newTenant.adminUser.email}
+                            onChange={e => setNewTenant({ ...newTenant, adminUser: { ...newTenant.adminUser, email: e.target.value } })}
+                            placeholder="admin@tenant.com"
+                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                          />
+                       </div>
+                       <div className="space-y-1">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Password</label>
+                          <input
+                            type="password"
+                            required
+                            value={newTenant.adminUser.password}
+                            onChange={e => setNewTenant({ ...newTenant, adminUser: { ...newTenant.adminUser, password: e.target.value } })}
+                            placeholder="Strong Password"
+                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                          />
+                       </div>
+                       <div className="space-y-1">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Phone Number</label>
+                          <input
+                            type="text"
+                            value={newTenant.adminUser.phone}
+                            onChange={e => setNewTenant({ ...newTenant, adminUser: { ...newTenant.adminUser, phone: e.target.value } })}
+                            placeholder="+234..."
+                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
                           />
                        </div>
                     </div>
-                    <div className="space-y-1">
-                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Secondary Color</label>
-                       <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={newTenant.secondaryColor}
-                            onChange={e => setNewTenant({ ...newTenant, secondaryColor: e.target.value })}
-                            className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
-                          />
-                          <input
-                            type="text"
-                            value={newTenant.secondaryColor}
-                            onChange={e => setNewTenant({ ...newTenant, secondaryColor: e.target.value })}
-                            className="flex-1 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs font-mono"
-                          />
-                       </div>
-                    </div>
                  </div>
+
                  <div className="pt-6 flex gap-3">
                     <button
                       type="button"

@@ -8,7 +8,7 @@ export class SuperAdminController {
    */
   static async createTenant(req: Request, res: Response) {
     try {
-      const { name, slug, primaryColor, secondaryColor, providerConfigs } = req.body;
+      const { name, slug, primaryColor, secondaryColor, providerConfigs, adminUser } = req.body;
 
       const tenant = await Tenant.create({
         name,
@@ -17,6 +17,17 @@ export class SuperAdminController {
         secondaryColor,
         providerConfigs
       });
+
+      if (adminUser) {
+        await User.create({
+          name: adminUser.name,
+          email: adminUser.email,
+          password: adminUser.password, // In a real app, this should be hashed
+          phone: adminUser.phone,
+          role: 'tenant_admin',
+          tenantId: tenant._id
+        });
+      }
 
       res.status(201).json({ success: true, tenant });
     } catch (e: any) {
