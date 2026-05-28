@@ -41,8 +41,14 @@ export default function LoginPage() {
 
     try {
       if (mode === 'login') {
-        await login(email, password);
-        navigate('/app');
+        const user = await login(email, password);
+        if (user?.backendRole === 'super_admin') {
+          navigate('/super-admin');
+        } else if (user?.backendRole === 'tenant_admin') {
+          navigate('/tenant-admin');
+        } else {
+          navigate('/app');
+        }
       } else if (mode === 'register') {
         await register(name, email, password, phone);
         navigate('/app');

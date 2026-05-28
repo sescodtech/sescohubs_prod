@@ -289,6 +289,9 @@ export const admin = {
     apiFetch(`/api/admin/products/${productId}/toggle`, { method: 'POST' }, true),
   featureProduct: (productId: string, featured: boolean) =>
     apiFetch(`/api/admin/products/${productId}/feature`, { method: 'POST', body: JSON.stringify({ featured }) }, true),
+  listTenants: () => apiFetch('/api/superadmin/tenants', {}, true),
+  createTenant: (data: any) => apiFetch('/api/superadmin/tenants', { method: 'POST', body: JSON.stringify(data) }, true),
+  updateTenant: (id: string, data: any) => apiFetch(`/api/superadmin/tenants/${id}`, { method: 'PUT', body: JSON.stringify(data) }, true),
 };
 
 // ============================================================

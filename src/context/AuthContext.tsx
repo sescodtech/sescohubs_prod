@@ -20,8 +20,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, phone?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, phone?: string) => Promise<User>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -90,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenStore.set(res.token);
     const u = buildUser(res.user);
     setUser(u);
+    return u; // Return user for immediate redirection
   };
 
   const register = async (name: string, email: string, password: string, phone?: string) => {
@@ -97,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenStore.set(res.token);
     const u = buildUser(res.user);
     setUser(u);
+    return u; // Return user for immediate redirection
   };
 
   const logout = () => {

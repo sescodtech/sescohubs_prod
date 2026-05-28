@@ -9,6 +9,7 @@ import purchaseRoutes from './routes/purchaseRoutes';
 import productRoutes from './routes/productRoutes';
 import superAdminRoutes from './routes/superAdminRoutes';
 import tenantAdminRoutes from './routes/tenantAdminRoutes';
+import adminRoutes from './routes/adminRoutes';
 import myRoutes from './routes/myRoutes';
 import { protect } from './middlewares/authMiddleware';
 import { AuthController } from './controllers/AuthController';
@@ -28,6 +29,7 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/superadmin', superAdminRoutes);
 app.use('/api/tenant-admin', tenantAdminRoutes);
 
