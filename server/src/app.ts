@@ -9,6 +9,7 @@ import purchaseRoutes from './routes/purchaseRoutes';
 import productRoutes from './routes/productRoutes';
 import superAdminRoutes from './routes/superAdminRoutes';
 import tenantAdminRoutes from './routes/tenantAdminRoutes';
+import myRoutes from './routes/myRoutes';
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/wallet', walletRoutes); // Adjusted to handle /api/my/wallet and /api/wallet/deposit
+app.use('/api/my', myRoutes);
+app.use('/api/wallet', walletRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/products', productRoutes);

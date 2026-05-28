@@ -4,7 +4,7 @@ import { protect } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-// Matches /api/wallet/deposit/initiate
-router.post('/deposit/initiate', protect, WalletController.depositInitiate);
+router.get('/wallet', protect, WalletController.getMyWallet);
+router.get('/transactions', protect, WalletController.getMyTransactions);
 
 export default router;
