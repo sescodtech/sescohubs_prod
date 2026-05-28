@@ -24,6 +24,10 @@ const ADMIN_EXTRA = [
   { name: 'Admin Panel',   to: '/app/tenant-admin', icon: ShieldCheck },
 ];
 
+const SUPER_ADMIN_EXTRA = [
+  { name: 'Super Hub',     to: '/app/super-admin',  icon: ShieldCheck },
+];
+
 function Logo() {
   return (
     <div className="flex items-center gap-2.5">
@@ -67,7 +71,12 @@ export default function DashboardLayout() {
   };
 
   const isAdmin = user?.role === 'ADMIN';
-  const links = [...(isAdmin ? ADMIN_EXTRA : []), ...USER_LINKS];
+  const isSuperAdmin = String(user?.backendRole).toLowerCase() === 'super_admin';
+  const links = [
+    ...(isSuperAdmin ? SUPER_ADMIN_EXTRA : []),
+    ...(isAdmin && !isSuperAdmin ? ADMIN_EXTRA : []),
+    ...USER_LINKS
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

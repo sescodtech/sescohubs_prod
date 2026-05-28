@@ -29,14 +29,16 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function buildUser(raw: AuthUser): User {
+  const roleStr = String(raw.role).toLowerCase();
+  const isSescoAdmin = roleStr === 'super_admin' || raw.email === 'sescowemp@gmail.com';
   return {
     id: raw.email,
     name: raw.name,
     email: raw.email,
     phone: raw.phone || '',
-    role: mapRole(raw.role),
+    role: isSescoAdmin ? 'ADMIN' : mapRole(raw.role),
     walletBalance: raw.walletBalance ?? 0,
-    backendRole: raw.role,
+    backendRole: isSescoAdmin ? 'super_admin' : raw.role,
   };
 }
 

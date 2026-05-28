@@ -1,26 +1,73 @@
-import { useState } from 'react';
-import { ShieldAlert, Users, Building, Activity, DollarSign, Globe, Settings, Lock, Server, BarChart3, Search, MoreVertical, CheckCircle2, XCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShieldAlert, Users, Building, Activity, DollarSign, Globe, Settings, Lock, Server, BarChart3, Search, MoreVertical, CheckCircle2, XCircle, Plus } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
+import { admin } from '../lib/api';
+import { toast } from 'sonner';
+
+interface Tenant {
+  _id: string;
+  name: string;
+  slug: string;
+  status: 'Active' | 'Suspended';
+  plan: string;
+  usersCount?: number;
+}
 
 export default function SuperAdminPage() {
   const [activeView, setActiveView] = useState<'overview' | 'tenants' | 'system'>('overview');
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newTenant, setNewTenant] = useState({ name: '', slug: '', primaryColor: '#ef4444', secondaryColor: '#b91c1c' });
+
+  useEffect(() => {
+    fetchTenants();
+  }, []);
+
+  async function fetchTenants() {
+    try {
+      setIsLoading(true);
+      const data = await admin.listTenants();
+      setTenants(data.tenants || []);
+    } catch (e: any) {
+      toast.error(`Failed to fetch tenants: ${e.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleUpdateTenant(id: string, updates: Partial<Tenant>) {
+    try {
+      await admin.updateTenant(id, updates);
+      toast.success('Tenant updated successfully');
+      await fetchTenants();
+      setSelectedTenant(null);
+    } catch (e: any) {
+      toast.error(`Update failed: ${e.message}`);
+    }
+  }
+
+  async function handleCreateTenant(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      await admin.createTenant(newTenant);
+      toast.success('Tenant created successfully');
+      setIsCreateModalOpen(false);
+      setNewTenant({ name: '', slug: '', primaryColor: '#ef4444', secondaryColor: '#b91c1c' });
+      await fetchTenants();
+    } catch (e: any) {
+      toast.error(`Creation failed: ${e.message}`);
+    }
+  }
 
   const stats = [
-    { label: 'Total Revenue', value: '₦12,450,000', change: '+24%', icon: DollarSign, color: 'text-green-600' },
-    { label: 'Active Tenants', value: '148', change: '+12', icon: Building, color: 'text-blue-600' },
-    { label: 'Running API Nodes', value: '12', change: 'Stable', icon: Server, color: 'text-purple-600' },
-    { label: 'Monthly Volume', value: '8.4M', change: '+15%', icon: BarChart3, color: 'text-orange-600' },
+    { label: 'Active Tenants', value: tenants.filter(t => t.status === 'Active').length, change: 'Live', icon: Building, color: 'text-blue-600' },
+    { label: 'Total Platforms', value: tenants.length, change: 'Global', icon: Globe, color: 'text-purple-600' },
+    { label: 'System Health', value: '99.9%', change: 'Stable', icon: Server, color: 'text-green-600' },
+    { label: 'API Nodes', value: '12', change: 'Active', icon: BarChart3, color: 'text-orange-600' },
   ];
-
-  const tenants = [
-    { id: 1, name: 'SwiftVtu', domain: 'swiftvtu.com', users: 1240, status: 'Active', plan: 'Enterprise' },
-    { id: 2, name: 'DataFlow', domain: 'dataflow.ng', users: 850, status: 'Active', plan: 'Pro' },
-    { id: 3, name: 'QuickSub', domain: 'quicksub.io', users: 320, status: 'Suspended', plan: 'Starter' },
-    { id: 4, name: 'EasyData', domain: 'easydata.com.ng', users: 2100, status: 'Active', plan: 'Enterprise' },
-  ];
-
-  const [selectedTenant, setSelectedTenant] = useState<typeof tenants[0] | null>(null);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
@@ -36,7 +83,7 @@ export default function SuperAdminPage() {
         </div>
         <div className="flex bg-white rounded-2xl border border-gray-100 p-1 shadow-sm">
            {['overview', 'tenants', 'system'].map(v => (
-              <button 
+              <button
                 key={v}
                 onClick={() => setActiveView(v as any)}
                 className={cn(
@@ -89,13 +136,13 @@ export default function SuperAdminPage() {
                              <span>{sys.load}% Load</span>
                           </div>
                           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                             <motion.div 
+                             <motion.div
                                initial={{ width: 0 }}
                                animate={{ width: `${sys.load}%` }}
                                className={cn(
                                  "h-full rounded-full transition-all duration-1000",
                                  sys.load > 80 ? "bg-red-500" : sys.load > 50 ? "bg-orange-500" : "bg-green-500"
-                               )} 
+                               )}
                              />
                           </div>
                        </div>
@@ -141,67 +188,83 @@ export default function SuperAdminPage() {
                     <Building size={20} className="text-red-500" />
                     Tenant Ecosystem
                  </h3>
-                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                    <input 
-                      type="text" 
-                      placeholder="Search domains..." 
-                      className="pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs w-full md:w-64"
-                    />
+                 <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setIsCreateModalOpen(true)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all flex items-center gap-2 shadow-lg shadow-red-100"
+                    >
+                      <Plus size={14} /> Create Tenant
+                    </button>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                      <input
+                        type="text"
+                        placeholder="Search domains..."
+                        className="pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs w-full md:w-64"
+                      />
+                    </div>
                  </div>
               </div>
               <div className="overflow-x-auto">
-                 <table className="w-full text-left">
-                    <thead>
-                       <tr className="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                          <th className="px-8 py-5">Platform Name</th>
-                          <th className="px-8 py-5">Subdomain</th>
-                          <th className="px-8 py-5">Users</th>
-                          <th className="px-8 py-5">Status</th>
-                          <th className="px-8 py-5">Plan Tier</th>
-                          <th className="px-8 py-5 text-right">Actions</th>
-                       </tr>
-                    </thead>
-                    <tbody className="text-sm">
-                       {tenants.map(t => (
-                          <tr key={t.id} className="hover:bg-gray-50 border-b border-gray-50 last:border-0 group">
-                             <td className="px-8 py-5">
-                                <div className="flex items-center gap-3">
-                                   <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center font-bold text-red-600 text-xs">
-                                      {t.name[0]}
-                                   </div>
-                                   <span className="font-bold text-gray-900">{t.name}</span>
-                                </div>
-                             </td>
-                             <td className="px-8 py-5 text-gray-500 font-medium font-mono text-xs">{t.domain}</td>
-                             <td className="px-8 py-5 font-black text-gray-900">{t.users.toLocaleString()}</td>
-                             <td className="px-8 py-5">
-                                <div className={cn(
-                                   "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter",
-                                   t.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                                )}>
-                                   {t.status === 'Active' ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
-                                   {t.status}
-                                </div>
-                             </td>
-                             <td className="px-8 py-5">
-                                <span className={cn(
-                                   "px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase",
-                                   t.plan === 'Enterprise' ? "bg-purple-100 text-purple-700" : t.plan === 'Pro' ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
-                                )}>{t.plan}</span>
-                             </td>
-                             <td className="px-8 py-5 text-right">
-                                <button 
-                                  onClick={() => setSelectedTenant(t)}
-                                  className="px-4 py-2 bg-gray-50 text-gray-900 rounded-xl text-[10px] font-black tracking-widest uppercase border border-gray-100 hover:bg-white hover:shadow-sm transition-all shadow-gray-100"
-                                >
-                                   Manage
-                                </button>
-                             </td>
-                          </tr>
-                       ))}
-                    </tbody>
-                 </table>
+                 {isLoading ? (
+                    <div className="p-20 text-center text-gray-400 font-bold text-xs uppercase tracking-widest">Loading tenants...</div>
+                 ) : (
+                    <table className="w-full text-left">
+                      <thead>
+                         <tr className="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                            <th className="px-8 py-5">Platform Name</th>
+                            <th className="px-8 py-5">Subdomain</th>
+                            <th className="px-8 py-5">Users</th>
+                            <th className="px-8 py-5">Status</th>
+                            <th className="px-8 py-5">Plan Tier</th>
+                            <th className="px-8 py-5 text-right">Actions</th>
+                         </tr>
+                      </thead>
+                      <tbody className="text-sm">
+                         {tenants.length === 0 ? (
+                            <tr><td colSpan={6} className="px-8 py-10 text-center text-gray-400 font-bold text-xs uppercase tracking-widest">No tenants found</td></tr>
+                         ) : (
+                            tenants.map(t => (
+                              <tr key={t._id} className="hover:bg-gray-50 border-b border-gray-50 last:border-0 group">
+                                 <td className="px-8 py-5">
+                                    <div className="flex items-center gap-3">
+                                       <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center font-bold text-red-600 text-xs">
+                                          {t.name[0]}
+                                       </div>
+                                       <span className="font-bold text-gray-900">{t.name}</span>
+                                    </div>
+                                 </td>
+                                 <td className="px-8 py-5 text-gray-500 font-medium font-mono text-xs">{t.slug}</td>
+                                 <td className="px-8 py-5 font-black text-gray-900">{t.usersCount?.toLocaleString() || 0}</td>
+                                 <td className="px-8 py-5">
+                                    <div className={cn(
+                                       "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter",
+                                       t.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                    )}>
+                                       {t.status === 'Active' ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
+                                       {t.status}
+                                    </div>
+                                 </td>
+                                 <td className="px-8 py-5">
+                                    <span className={cn(
+                                       "px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase",
+                                       t.plan === 'Enterprise' ? "bg-purple-100 text-purple-700" : t.plan === 'Pro' ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+                                    )}>{t.plan}</span>
+                                 </td>
+                                 <td className="px-8 py-5 text-right">
+                                    <button
+                                      onClick={() => setSelectedTenant(t)}
+                                      className="px-4 py-2 bg-gray-50 text-gray-900 rounded-xl text-[10px] font-black tracking-widest uppercase border border-gray-100 hover:bg-white hover:shadow-sm transition-all shadow-gray-100"
+                                    >
+                                       Manage
+                                    </button>
+                                 </td>
+                              </tr>
+                            ))
+                         )}
+                      </tbody>
+                    </table>
+                 )}
               </div>
            </div>
         </div>
@@ -299,7 +362,7 @@ export default function SuperAdminPage() {
       {/* Tenant Management Modal */}
       {selectedTenant && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-200">
-           <motion.div 
+           <motion.div
              initial={{ scale: 0.95, opacity: 0 }}
              animate={{ scale: 1, opacity: 1 }}
              className="bg-white rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden border border-gray-100"
@@ -308,9 +371,9 @@ export default function SuperAdminPage() {
                  <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-red-100">
                     {selectedTenant.name[0]}
                  </div>
-                 <div>
+                 <div className="flex-1">
                     <h3 className="text-2xl font-black text-gray-900 tracking-tight">{selectedTenant.name}</h3>
-                    <p className="text-gray-500 font-mono text-xs">{selectedTenant.domain}</p>
+                    <p className="text-gray-500 font-mono text-xs">{selectedTenant.slug}</p>
                  </div>
               </div>
               <div className="p-10 space-y-8">
@@ -335,8 +398,9 @@ export default function SuperAdminPage() {
                     <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Modify Subscription</h4>
                     <div className="grid grid-cols-3 gap-2">
                        {['Starter', 'Pro', 'Enterprise'].map(plan => (
-                          <button 
+                          <button
                             key={plan}
+                            onClick={() => handleUpdateTenant(selectedTenant._id, { plan })}
                             className={cn(
                                "py-3 rounded-xl border-2 text-[10px] font-black uppercase tracking-widest transition-all",
                                selectedTenant.plan === plan ? "border-red-600 bg-red-50 text-red-600" : "border-gray-100 hover:border-red-100"
@@ -349,23 +413,122 @@ export default function SuperAdminPage() {
                  </div>
 
                  <div className="pt-6 flex gap-3">
-                    <button 
+                    <button
                       onClick={() => setSelectedTenant(null)}
                       className="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors"
                     >
                        Close
                     </button>
                     {selectedTenant.status === 'Active' ? (
-                       <button className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100 hover:bg-red-700 transition-all flex items-center justify-center gap-2">
+                       <button
+                         onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'Suspended' })}
+                         className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100 hover:bg-red-700 transition-all flex items-center justify-center gap-2"
+                       >
                           <XCircle size={16} /> Suspend Tenant
                        </button>
                     ) : (
-                       <button className="flex-1 py-4 bg-green-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center justify-center gap-2">
+                       <button
+                         onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'Active' })}
+                         className="flex-1 py-4 bg-green-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                       >
                           <CheckCircle2 size={16} /> Reactivate Tenant
                        </button>
                     )}
                  </div>
               </div>
+           </motion.div>
+        </div>
+      )}
+
+      {/* Create Tenant Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-200">
+           <motion.div
+             initial={{ scale: 0.95, opacity: 0 }}
+             animate={{ scale: 1, opacity: 1 }}
+             className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden border border-gray-100"
+           >
+              <div className="p-10 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+                 <h3 className="text-2xl font-black text-gray-900 tracking-tight">Create New Tenant</h3>
+                 <button onClick={() => setIsCreateModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                    <X size={24} />
+                 </button>
+              </div>
+              <form onSubmit={handleCreateTenant} className="p-10 space-y-6">
+                 <div className="space-y-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Platform Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={newTenant.name}
+                      onChange={e => setNewTenant({ ...newTenant, name: e.target.value })}
+                      placeholder="e.g. SwiftVtu"
+                      className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                    />
+                 </div>
+                 <div className="space-y-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Subdomain (Slug)</label>
+                    <input
+                      type="text"
+                      required
+                      value={newTenant.slug}
+                      onChange={e => setNewTenant({ ...newTenant, slug: e.target.value })}
+                      placeholder="e.g. swiftvtu"
+                      className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-sm"
+                    />
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Primary Color</label>
+                       <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={newTenant.primaryColor}
+                            onChange={e => setNewTenant({ ...newTenant, primaryColor: e.target.value })}
+                            className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
+                          />
+                          <input
+                            type="text"
+                            value={newTenant.primaryColor}
+                            onChange={e => setNewTenant({ ...newTenant, primaryColor: e.target.value })}
+                            className="flex-1 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs font-mono"
+                          />
+                       </div>
+                    </div>
+                    <div className="space-y-1">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Secondary Color</label>
+                       <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={newTenant.secondaryColor}
+                            onChange={e => setNewTenant({ ...newTenant, secondaryColor: e.target.value })}
+                            className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
+                          />
+                          <input
+                            type="text"
+                            value={newTenant.secondaryColor}
+                            onChange={e => setNewTenant({ ...newTenant, secondaryColor: e.target.value })}
+                            className="flex-1 px-3 py-2 bg-gray-50 rounded-xl border border-gray-100 outline-none focus:ring-2 focus:ring-red-100 transition-all text-xs font-mono"
+                          />
+                       </div>
+                    </div>
+                 </div>
+                 <div className="pt-6 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsCreateModalOpen(false)}
+                      className="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors"
+                    >
+                       Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100 hover:bg-red-700 transition-all"
+                    >
+                       Create Tenant
+                    </button>
+                 </div>
+              </form>
            </motion.div>
         </div>
       )}

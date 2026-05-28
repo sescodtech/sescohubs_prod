@@ -22,7 +22,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user && !authLoading) {
-      navigate('/app', { replace: true });
+      if (user.backendRole === 'super_admin') {
+        navigate('/super-admin', { replace: true });
+      } else if (user.backendRole === 'tenant_admin') {
+        navigate('/tenant-admin', { replace: true });
+      } else {
+        navigate('/app', { replace: true });
+      }
     }
   }, [user, authLoading, navigate]);
 
