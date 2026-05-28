@@ -23,7 +23,7 @@ export class JarapointProvider implements IProvider {
     return n;
   }
 
-  async getBalance(): Promise<{ success: boolean, balance: number, error?: string }> {
+  async getBalance(tenantId: string): Promise<{ success: boolean, balance: number, error?: string }> {
     try {
       const r = await axios.get(`${BASE_URL}/api/balance/`, {
         headers: this.headers(),

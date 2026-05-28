@@ -7,6 +7,7 @@ export interface Product {
   name: string;
   category: string;
   provider: string;
+  providerId: string;
   costPrice: number;
   sellingPrice: number;
   validity?: string;
@@ -21,7 +22,7 @@ interface RawPlan {
   validity: string;
   cat: string;
   prov: string;
-  jaraId: string;
+  providerId: string;
   cost: number;
   planType: string;
   apiSource: string;
@@ -33,85 +34,84 @@ export class ProductService {
 
   private static readonly RAW: RawPlan[] = [
     // ── MTN DATA (Jarapoint SME plans) ──
-    { id:'mtn_sme_1_weeks_500_mb',    name:'MTN 500MB',  validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_500_mb_1_weeks',    cost:325,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_weeks_1_gb',      name:'MTN 1GB',    validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_1_gb_1_weeks',      cost:470,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_1_gb',     name:'MTN 1GB',    validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_1_gb_1_months',     cost:575,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_1.2_gb',   name:'MTN 1.2GB',  validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_1.2_gb_1_months',   cost:497,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_weeks_2_gb',      name:'MTN 2GB',    validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_2_gb_1_weeks',      cost:930,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_2_gb',     name:'MTN 2GB',    validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_2_gb_1_months',     cost:965,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_2_days_3.2_gb',     name:'MTN 3.2GB',  validity:'2 Days',   cat:'data', prov:'mtn', jaraId:'mtn_sme_3.2_gb_2_days',     cost:1195, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_7_days_3_gb',       name:'MTN 3GB',    validity:'7 Days',   cat:'data', prov:'mtn', jaraId:'mtn_sme_3_gb_7_days',       cost:1375, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_3_gb',     name:'MTN 3GB',    validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_3_gb_1_months',     cost:1444, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_weeks_3.5_gb',    name:'MTN 3.5GB',  validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_3.5_gb_1_weeks',    cost:1700, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_5_gb',     name:'MTN 5GB',    validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_5_gb_1_months',     cost:1975, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_weeks_6_gb',      name:'MTN 6GB',    validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_6_gb_1_weeks',      cost:2875, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_weeks_11_gb',     name:'MTN 11GB',   validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_11_gb_1_weeks',     cost:4220, planType:'sme',       apiSource:'jarapoint' },
-    { id:'mtn_sme_1_weeks_20_gb',     name:'MTN 20GB',   validity:'1 Week',   cat:'data', prov:'mtn', jaraId:'mtn_sme_20_gb_1_weeks',      cost:6250, planType:'corporate', apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_36_gb',    name:'MTN 36GB',   validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_36_gb_1_months',    cost:12995,planType:'corporate', apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_60_gb',    name:'MTN 60GB',   validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_60_gb_1_months',    cost:18500,planType:'corporate', apiSource:'jarapoint' },
-    { id:'mtn_sme_1_months_120_gb',   name:'MTN 120GB',  validity:'1 Month',  cat:'data', prov:'mtn', jaraId:'mtn_sme_120_gb_1_months',   cost:30000,planType:'corporate', apiSource:'jarapoint' },
-    { id:'mtn_gifting_1gb_1day',      name:'MTN 1GB',    validity:'1 Day',    cat:'data', prov:'mtn', jaraId:'mtn_gifting_1gb_1day',      cost:310,  planType:'gifting',   apiSource:'cheapdatahub' },
-    { id:'mtn_gifting_2gb_1day',      name:'MTN 2GB',    validity:'1 Day',    cat:'data', prov:'mtn', jaraId:'mtn_gifting_2gb_1day',      cost:550,  planType:'gifting',   apiSource:'cheapdatahub' },
+    { id:'mtn_sme_1_weeks_500_mb',    name:'MTN 500MB',  validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_500_mb_1_weeks',    cost:325,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_weeks_1_gb',      name:'MTN 1GB',    validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_1_gb_1_weeks',      cost:470,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_1_gb',     name:'MTN 1GB',    validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_1_gb_1_months',     cost:575,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_1.2_gb',   name:'MTN 1.2GB',  validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_1.2_gb_1_months',   cost:497,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_weeks_2_gb',      name:'MTN 2GB',    validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_2_gb_1_weeks',      cost:930,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_2_gb',     name:'MTN 2GB',    validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_2_gb_1_months',     cost:965,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_2_days_3.2_gb',     name:'MTN 3.2GB',  validity:'2 Days',   cat:'data', prov:'mtn', providerId:'mtn_sme_3.2_gb_2_days',     cost:1195, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_7_days_3_gb',       name:'MTN 3GB',    validity:'7 Days',   cat:'data', prov:'mtn', providerId:'mtn_sme_3_gb_7_days',       cost:1375, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_3_gb',     name:'MTN 3GB',    validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_3_gb_1_months',     cost:1444, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_weeks_3.5_gb',    name:'MTN 3.5GB',  validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_3.5_gb_1_weeks',    cost:1700, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_5_gb',     name:'MTN 5GB',    validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_5_gb_1_months',     cost:1975, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_weeks_6_gb',      name:'MTN 6GB',    validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_6_gb_1_weeks',      cost:2875, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_weeks_11_gb',     name:'MTN 11GB',   validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_11_gb_1_weeks',     cost:4220, planType:'sme',       apiSource:'jarapoint' },
+    { id:'mtn_sme_1_weeks_20_gb',     name:'MTN 20GB',   validity:'1 Week',   cat:'data', prov:'mtn', providerId:'mtn_sme_20_gb_1_weeks',      cost:6250, planType:'corporate', apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_36_gb',    name:'MTN 36GB',   validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_36_gb_1_months',    cost:12995,planType:'corporate', apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_60_gb',    name:'MTN 60GB',   validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_60_gb_1_months',    cost:18500,planType:'corporate', apiSource:'jarapoint' },
+    { id:'mtn_sme_1_months_120_gb',   name:'MTN 120GB',  validity:'1 Month',  cat:'data', prov:'mtn', providerId:'mtn_sme_120_gb_1_months',   cost:30000,planType:'corporate', apiSource:'jarapoint' },
+    { id:'mtn_gifting_1gb_1day',      name:'MTN 1GB',    validity:'1 Day',    cat:'data', prov:'mtn', providerId:'mtn_gifting_1gb_1day',      cost:310,  planType:'gifting',   apiSource:'cheapdatahub' },
+    { id:'mtn_gifting_2gb_1day',      name:'MTN 2GB',    validity:'1 Day',    cat:'data', prov:'mtn', providerId:'mtn_gifting_2gb_1day',      cost:550,  planType:'gifting',   apiSource:'cheapdatahub' },
     // ── AIRTEL DATA ──
-    { id:'airtel_sme_1_weeks_500_mb', name:'Airtel 500MB',validity:'1 Week',  cat:'data', prov:'airtel', jaraId:'airtel_sme_500_mb_1_weeks',  cost:525,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_weeks_1_gb',   name:'Airtel 1GB', validity:'1 Week',   cat:'data', prov:'airtel', jaraId:'airtel_sme_1_gb_1_weeks',    cost:835,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_weeks_1.5_gb', name:'Airtel 1.5GB',validity:'1 Week', cat:'data', prov:'airtel', jaraId:'airtel_sme_1.5_gb_1_weeks',  cost:595,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_months_2_gb',  name:'Airtel 2GB', validity:'1 Month',  cat:'data', prov:'airtel', jaraId:'airtel_sme_2_gb_1_months',   cost:1620, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_2_days_3.2_gb',  name:'Airtel 3.2GB',validity:'2 Days', cat:'data', prov:'airtel', jaraId:'airtel_sme_3.2_gb_2_days',   cost:1070, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_weeks_3.5_gb', name:'Airtel 3.5GB',validity:'1 Week', cat:'data', prov:'airtel', jaraId:'airtel_sme_3.5_gb_1_weeks',  cost:1730, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_months_3_gb',  name:'Airtel 3GB', validity:'1 Month',  cat:'data', prov:'airtel', jaraId:'airtel_sme_3_gb_1_months', la: ' la', cost:2125, planType:'sme',       apiSource:'jarapoint' }, // Note: validity missing in original, fixing a bit
-    { id:'airtel_sme_1_months_4_gb',  name:'Airtel 4GB', validity:'1 Month',  cat:'data', prov:'airtel', jaraId:'airtel_sme_4_gb_1_months',   cost:2675, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_weeks_5_gb',   name:'Airtel 5GB', validity:'1 Week',   cat:'data', prov:'airtel', jaraId:'airtel_sme_5_gb_1_weeks',    cost:1800, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_months_8_gb',  name:'Airtel 8GB', validity:'1 Month',  cat:'data', prov:'airtel', jaraId:'airtel_sme_8_gb_1_months',   cost:3446, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_weeks_10_gb',  name:'Airtel 10GB',validity:'1 Week',S: ' S',  cat:'data', prov:'airtel', jaraId:'airtel_sme_10_gb_1_weeks',    cost:3600, planType:'sme',       apiSource:'jarapoint' },
-    { id:'airtel_sme_1_months_18_gb', name:'Airtel 18GB',validity:'1 Month', la: ' la', cat:'data', prov:'airtel', jaraId:'airtel_sme_18_gb_1_months',  cost:7050, planType:'corporate', apiSource:'jarapoint' },
-    { id:'airtel_sme_1_months_25_gb', name:'Airtel 25GB',validity:'1 Month', la: ' la', cat:'data', prov:'airtel', jaraId:'airtel_sme_25_gb_1_months',L: ' l', cost:9475, planType:'corporate', apiSource:'jarapoint' },
-    { id:'airtel_sme_1_months_100_gb',name:'Airtel 100GB',validity:'1 Month', la: ' la', cat:'data', prov:'airtel', jaraId:'airtel_sme_100_gb_1_months', cost:25000,planType:'corporate', apiSource:'jarapoint' },
-    { id:'airtel_gifting_1gb_1day',   name:'Airtel 1GB', validity:'1 Day',    cat:'data', prov:'airtel', jaraId:'airtel_gifting_1gb_1day',    cost:290,  planType:'gifting',   apiSource:'cheapdatahub' },
+    { id:'airtel_sme_1_weeks_500_mb', name:'Airtel 500MB',validity:'1 Week',  cat:'data', prov:'airtel', providerId:'airtel_sme_500_mb_1_weeks',  cost:525,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_weeks_1_gb',   name:'Airtel 1GB', validity:'1 Week',   cat:'data', prov:'airtel', providerId:'airtel_sme_1_gb_1_weeks',    cost:835,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_weeks_1.5_gb', name:'Airtel 1.5GB',validity:'1 Week', cat:'data', prov:'airtel', providerId:'airtel_sme_1.5_gb_1_weeks',  cost:595,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_2_gb',  name:'Airtel 2GB', validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_2_gb_1_months',   cost:1620, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_2_days_3.2_gb',  name:'Airtel 3.2GB',validity:'2 Days', cat:'data', prov:'airtel', providerId:'airtel_sme_3.2_gb_2_days',   cost:1070, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_weeks_3.5_gb', name:'Airtel 3.5GB',validity:'1 Week', cat:'data', prov:'airtel', providerId:'airtel_sme_3.5_gb_1_weeks',  cost:1730, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_3_gb',  name:'Airtel 3GB', validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_3_gb_1_months',   cost:2125, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_4_gb',  name:'Airtel 4GB', validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_4_gb_1_months',   cost:2675, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_weeks_5_gb',   name:'Airtel 5GB', validity:'1 Week',   cat:'data', prov:'airtel', providerId:'airtel_sme_5_gb_1_weeks',    cost:1800, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_8_gb',  name:'Airtel 8GB', validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_8_gb_1_months',   cost:3446, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_weeks_10_gb',  name:'Airtel 10GB',validity:'1 Week',   cat:'data', prov:'airtel', providerId:'airtel_sme_10_gb_1_weeks',    cost:3600, planType:'sme',       apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_18_gb', name:'Airtel 18GB',validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_18_e_gb_1_months',  cost:7050, planType:'corporate', apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_25_gb', name:'Airtel 25GB',validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_25_gb_1_months',   cost:9475, planType:'corporate', apiSource:'jarapoint' },
+    { id:'airtel_sme_1_months_100_gb',name:'Airtel 100GB',validity:'1 Month',  cat:'data', prov:'airtel', providerId:'airtel_sme_100_gb_1_months', cost:25000,planType:'corporate', apiSource:'jarapoint' },
+    { id:'airtel_gifting_1gb_1day',   name:'Airtel 1GB', validity:'1 Day',    cat:'data', prov:'airtel', providerId:'airtel_gifting_1gb_1day',    cost:290,  planType:'gifting',   apiSource:'cheapdatahub' },
     // ── GLO DATA ──
-    { id:'glo_sme_1_months_500_mb',   name:'Glo 500MB',  validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_500_mb_1_months',   cost:238,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_3_days_1_gb',       name:'Glo 1GB',    validity:'3 Days',   cat:'data', prov:'glo', jaraId:'glo_sme_1_gb_3_days',       cost:310,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_7_days_1_gb',       name:'Glo 1GB',    validity:'7 Days',   cat:'data', prov:'glo', jaraId:'glo_sme_1_gb_7_days',       cost:350,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_weeks_1_gb',      name:'Glo 1GB',    validity:'1 Week',   cat:'data', prov:'glo', jaraId:'glo_sme_1_gb_1_weeks',      cost:350,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_months_1_gb',     name:'Glo 1GB',    validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_1_gb_1_months',     cost:465,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_months_2_gb',     name:'Glo 2GB',    validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_2_gb_1_months',     cost:930,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_weeks_3_gb',      name:'Glo 3GB',    validity:'1 Week',   cat:'data', prov:'glo', jaraId:'glo_sme_3_gb_1_weeks',      cost:935,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_months_3_gb',     name:'Glo 3GB',    validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_3_gb_1_months',     cost:1395, planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_months_5_gb',     name:'Glo 5GB',    validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_5_gb_1_months',     cost:2325, planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_months_10_gb',    name:'Glo 10GB',   validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_10_gb_1_months',    cost:4650, planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_weeks_10_gb',     name:'Glo 10GB',   validity:'1 Week',   cat:'data', prov:'glo', jaraId:'glo_sme_10_gb_1_weeks',     cost:2595, planType:'sme',       apiSource:'jarapoint' },
-    { id:'glo_sme_1_months_20_gb',    name:'Glo 20GB',   validity:'1 Month',  cat:'data', prov:'glo', jaraId:'glo_sme_20_gb_1_months',    cost:7080, planType:'corporate', apiSource:'jarapoint' },
-    { id:'glo_gifting_1gb_1day',      name:'Glo 1GB',    validity:'1 Day',    cat:'data', prov:'glo', jaraId:'glo_gifting_1gb_1day',      cost:250,  planType:'gifting',   apiSource:'cheapdatahub' },
+    { id:'glo_sme_1_months_500_mb',   name:'Glo 500MB',  validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_500_mb_1_months',   cost:238,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_3_days_1_gb',       name:'Glo 1GB',    validity:'3 Days',   cat:'data', prov:'glo', providerId:'glo_sme_1_gb_3_days',       cost:310,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_7_days_1_gb',       name:'Glo 1GB',    validity:'7 Days',   cat:'data', prov:'glo', providerId:'glo_sme_1_gb_7_days',       cost:350,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_weeks_1_gb',      name:'Glo 1GB',    validity:'1 Week',   cat:'data', prov:'glo', providerId:'glo_sme_1_gb_1_weeks',      cost:350,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_months_1_gb',     name:'Glo 1GB',    validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_1_gb_1_months',     cost:465,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_months_2_gb',     name:'Glo 2GB',    validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_2_gb_1_months',     cost:930,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_weeks_3_gb',      name:'Glo 3GB',    validity:'1 Week',   cat:'data', prov:'glo', providerId:'glo_sme_3_gb_1_weeks',      cost:935,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_months_3_gb',     name:'Glo 3GB',    validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_3_gb_1_months',     cost:1395, planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_months_5_gb',     name:'Glo 5GB',    validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_5_gb_1_months',     cost:2325, planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_months_10_gb',    name:'Glo 10GB',   validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_10_gb_1_months',    cost:4650, planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_weeks_10_gb',     name:'Glo 10GB',   validity:'1 Week',   cat:'data', prov:'glo', providerId:'glo_sme_10_gb_1_weeks',     cost:2595, planType:'sme',       apiSource:'jarapoint' },
+    { id:'glo_sme_1_months_20_gb',    name:'Glo 20GB',   validity:'1 Month',  cat:'data', prov:'glo', providerId:'glo_sme_20_gb_1_months',    cost:7080, planType:'corporate', apiSource:'jarapoint' },
+    { id:'glo_gifting_1gb_1day',      name:'Glo 1GB',    validity:'1 Day',    cat:'data', prov:'glo', providerId:'glo_gifting_1gb_1day',      cost:250,  planType:'gifting',   apiSource:'cheapdatahub' },
     // ── 9MOBILE DATA ──
-    { id:'9mobile_sme_1_months_500_mb',name:'9mobile 500MB',validity:'1 Month',cat:'data',prov:'9mobile',jaraId:'9mobile_sme_500_mb_1_months',cost:290,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'9mobile_sme_1_months_1_gb', name:'9mobile 1GB',validity:'1 Month',cat:'data',prov:'9mobile', jaraId:'9mobile_sme_1_gb_1_months',   cost:555,  planType:'sme',       apiSource:'jarapoint' },
-    { id:'9mobile_sme_1_months_2_gb', name:'9mobile 2GB',validity:'1 Month',cat:'data',prov:'9mobile', jaraId:'9mobile_sme_2_gb_1_months',   cost:1110, planType:'sme',       apiSource:'jarapoint' },
-    { id:'9mobile_sme_1_months_3_gb', name:'9mobile 3GB',validity:'1 Month',cat:'data',prov:'9mobile', jaraId:'9mobile_sme_3_gb_1_months',   cost:1665, planType:'sme',       apiSource:'jarapoint' },
-    { id:'9mobile_sme_1_months_10_gb',name:'9mobile 10GB',validity:'1 Month', la: ' la', cat:'data',prov:'9mobile', jaraId:'9mobile_sme_10_gb_1_months',  cost:5550, planType:'corporate', apiSource:'jarapoint' },
-    { id:'9mobile_gifting_1gb_1day',  name:'9mobile 1GB',validity:'1 Day',   cat:'data',prov:'9mobile', jaraId:'9mobile_gifting_1gb_1day',    cost:280,  planType:'gifting', la: ' la', apiSource:'gladtidings' },
+    { id:'9mobile_sme_1_months_500_mb',name:'9mobile 500MB',validity:'1 Month',cat:'data',prov:'9mobile',providerId:'9mobile_sme_500_mb_1_months',cost:290,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'9mobile_sme_1_months_1_gb', name:'9mobile 1GB',validity:'1 Month',cat:'data',prov:'9mobile', providerId:'9mobile_sme_1_gb_1_months',   cost:555,  planType:'sme',       apiSource:'jarapoint' },
+    { id:'9mobile_sme_1_months_2_gb', name:'9mobile 2GB',validity:'1 Month',cat:'data',prov:'9mobile', providerId:'9mobile_sme_2_gb_1_months',   cost:1110, planType:'sme',       apiSource:'jarapoint' },
+    { id:'9mobile_sme_1_months_3_gb', name:'9mobile 3GB',validity:'1 Month',cat:'data',prov:'9mobile', providerId:'9mobile_sme_3_gb_1_months',   cost:1665, planType:'sme',       apiSource:'jarapoint' },
+    { id:'9mobile_sme_1_months_10_gb',name:'9mobile 10GB',validity:'1 Month', cat:'data',prov:'9mobile', providerId:'9mobile_sme_10_gb_1_months',  cost:5550, planType:'corporate', apiSource:'jarapoint' },
+    { id:'9mobile_gifting_1gb_1day',  name:'9mobile 1GB',validity:'1 Day',   cat:'data',prov:'9mobile', providerId:'9mobile_gifting_1gb_1day',    cost:280,  planType:'gifting', apiSource:'gladtidings' },
     // ── AIRTIME ──
-    { id:'airtime_mtn',    name:'MTN Airtime',    validity:'', cat:'airtime', prov:'mtn',     cost:100, planType:'airtime', apiSource:'jarapoint' },
-    { id:'airtime_airtel', name:'Airtel Airtime', validity:'', cat:'airtime', prov:'airtel',  cost:100, planType:'airtime', apiSource:'jarapoint' },
-    { id:'airtime_glo',    name:'Glo Airtime',    validity:'', cat:'airtime', prov:'glo',     cost:100, planType:'airtime', apiSource:'jarapoint' },
-    { id:'airtime_9mobile',name:'9mobile Airtime',validity:'', cat:'airtime', prov:'9mobile', cost:100, planType:'airtime', apiSource:'jarapoint' },
+    { id:'airtime_mtn',    name:'MTN Airtime',    validity:'', cat:'airtime', prov:'mtn',     providerId:'airtime_mtn', cost:100, planType:'airtime', apiSource:'jarapoint' },
+    { id:'airtime_airtel', name:'Airtel Airtime', validity:'', cat:'airtime', prov:'airtel',  providerId:'airtime_airtel', cost:100, planType:'airtime', apiSource:'jarapoint' },
+    { id:'airtime_glo',    name:'Glo Airtime',    validity:'', cat:'airtime', prov:'glo',     providerId:'airtime_glo', cost:100, planType:'airtime', apiSource:'jarapoint' },
+    { id:'airtime_9mobile',name:'9mobile Airtime',validity:'', cat:'airtime', prov:'9mobile', providerId:'airtime_9mobile', cost:100, planType:'airtime', apiSource:'jarapoint' },
     // ── CABLE ──
-    { id:'dstv_premium', name:'DSTV Premium', validity:'1 Month', cat:'cable', prov:'dstv_subscription', jaraId:'dstv_subscription_1_months_dstv_premium', cost:44500, planType:'cable', apiSource:'jarapoint' },
-    { id:'dstv_compact', name:'DSTV Compact', validity:'1 Month', cat:'cable', prov:'dstv_subscription', jaraId:'dstv_subscription_1_months_dstv_compact', cost:30000, planType:'cable', apiSource:'jarapoint' },
-    { id:'dstv_confam',  name:'DSTV Confam',  validity:'1 Month', cat:'cable', prov:'dstv_subscription', jaraId:'dstv_subscription_1_months_dstv_confam',  cost:12750, planType:'cable', apiSource:'jarapoint' },
-    { id:'gotv_supa',    name:'GOTV Supa',    validity:'1 Month', cat:'cable', prov:'gotv_subscription', jaraId:'gotv_subscription_1_months_gotv_supa', cost:11400, planType:'cable', apiSource:'jarapoint' },
-    { id:'gotv_max',     name:'GOTV Max',     validity:'1 Month', cat:'cable', prov:'gotv_subscription', jaraId:'gotv_subscription_1_months_gotv_max', la: ' la', cost:8500, planType:'cable', apiSource:'jarapoint' },
-    { id:'waec_pin', name:'WAEC PIN', validity:'', cat:'education', prov:'waec', jaraId:'waec', cost:3900, planType:'education', apiSource:'jarapoint' },
-    { id:'neco_pin', name:'NECO PIN', validity:'', cat:'education', prov:'neco', jaraId:'neco', cost:2700, planType:'education', apiSource:'jarapoint' },
-    { id:'recharge_mtn_100', name:'MTN ₦100',  validity:'', cat:'recharge', prov:'mtn', jaraId:'100', cost:100, planType:'recharge', apiSource:'jarapoint' },
-    { id:'recharge_mtn_200', name:'MTN ₦200',  validity:'', cat:'recharge', prov:'mtn', jaraId:'200', cost:200, planType:'recharge', apiSource:'jarapoint' },
-    { id:'recharge_mtn_500', name:'MTN ₦500',  validity:'', cat:'recharge', prov:'mtn', jaraId:'500', cost:500, planType:'recharge', apiSource:'jarapoint' },
+    { id:'dstv_premium', name:'DSTV Premium', validity:'1 Month', cat:'cable', prov:'dstv_subscription', providerId:'dstv_subscription_1_months_dstv_premium', cost:44500, planType:'cable', apiSource:'jarapoint' },
+    { id:'dstv_compact', name:'DSTV Compact', validity:'1 Month', cat:'cable', prov:'dstv_subscription', providerId:'dstv_subscription_1_months_dstv_compact', cost:30000, planType:'cable', apiSource:'jarapoint' },
+    { id:'dstv_confam',  name:'DSTV Confam',  validity:'1 Month', cat:'cable', prov:'dstv_subscription', providerId:'dstv_subscription_1_months_dstv_confam',  cost:12750, planType:'cable', apiSource:'jarapoint' },
+    { id:'gotv_supa',    name:'GOTV Supa',    validity:'1 Month', cat:'cable', prov:'gotv_subscription', providerId:'gotv_subscription_1_months_gotv_supa', cost:11400, planType:'cable', apiSource:'jarapoint' },
+    { id:'gotv_max',     name:'GOTV Max',     validity:'1 Month', cat:'cable', prov:'gotv_subscription', providerId:'gotv_subscription_1_months_gotv_max', cost:8500, planType:'cable', apiSource:'jarapoint' },
+    { id:'waec_pin', name:'WAEC PIN', validity:'', cat:'education', prov:'waec', providerId:'waec', cost:3900, planType:'education', apiSource:'jarapoint' },
+    { id:'neco_pin', name:'NECO PIN', validity:'', cat:'education', prov:'neco', providerId:'neco', cost:2700, planType:'education', apiSource:'jarapoint' },
+    { id:'recharge_mtn_100', name:'MTN ₦100',  validity:'', cat:'recharge', prov:'mtn', providerId:'100', cost:100, planType:'recharge', apiSource:'jarapoint' },
+    { id:'recharge_mtn_200', name:'MTN ₦200',  validity:'', cat:'recharge', prov:'mtn', providerId:'200', cost:200, planType:'recharge', apiSource:'jarapoint' },
+    { id:'recharge_mtn_500', name:'MTN ₦500',  validity:'', cat:'recharge', prov:'mtn', providerId:'500', cost:500, planType:'recharge', apiSource:'jarapoint' },
   ];
 
   private static async fetchCheapDataHubPlans(): Promise<RawPlan[]> {
     const CDH_KEY = process.env.CHEAPDATAHUB_API_KEY;
     if (!CDH_KEY) return [];
     try {
-      // This assumes the la-la-la provider logic is integrated, for now we mimic the old JS axios call
       const r = await axios.get('https://www.cheapdatahub.ng/api/v1/resellers/plans', {
         headers: { Authorization: 'Bearer ' + CDH_KEY }
       });
@@ -121,7 +121,7 @@ export class ProductService {
         validity: p.validity || '',
         cat: 'data',
         prov: p.network,
-        jaraId: String(p.bundleId),
+        providerId: String(p.bundleId),
         cost: p.price,
         planType: p.planType || 'gifting',
         apiSource: 'cheapdatahub',
@@ -150,7 +150,7 @@ export class ProductService {
       for (const [planKey, planGroups] of Object.entries(Dataplans)) {
         const prov = GTD_NET[planKey as keyof typeof GTD_NET];
         if (!prov) continue;
-        const raw = planGroups.ALL || planGroups[Object.keys(planGroups)[0]];
+        const raw = (planGroups as any).ALL || (planGroups as any)[Object.keys(planGroups as object)[0]];
         if (!Array.isArray(raw)) continue;
         for (const item of raw) {
           const planId = item.dataplan_id || item.id;
@@ -163,7 +163,7 @@ export class ProductService {
             validity: item.month_validate || '',
             cat: 'data',
             prov,
-            jaraId: String(planId),
+            providerId: String(planId),
             cost,
             planType: (item.plan_type || '').toUpperCase().includes('SME') ? 'sme' : 'gifting',
             apiSource: 'gladtidings',
@@ -208,7 +208,7 @@ export class ProductService {
 
     return allPlans.map(plan => {
       const category = plan.cat || 'data';
-      const markupPct = markups[category] || 10;
+      const markupPct = (markups as any)[category] || 10;
       const sellingPrice = Math.ceil(plan.cost * (1 + markupPct / 100));
 
       return {
@@ -216,6 +216,7 @@ export class ProductService {
         name: plan.name,
         category,
         provider: plan.prov,
+        providerId: plan.providerId,
         costPrice: plan.cost,
         sellingPrice,
         validity: plan.validity,

@@ -23,7 +23,7 @@ export class GladTidingsProvider implements IProvider {
     return n;
   }
 
-  async getBalance(): Promise<{ success: boolean, balance: number, error?: string }> {
+  async getBalance(tenantId: string): Promise<{ success: boolean, balance: number, error?: string }> {
     if (!this.apiKey) return { success: false, balance: 0, error: 'GLADTIDINGS_API_KEY not set' };
     try {
       const r = await axios.get(`${BASE_URL}/user/`, {

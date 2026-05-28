@@ -10,6 +10,7 @@ export class WalletController {
   static async getMyWallet(req: any, res: Response) {
     try {
       const user = await User.findById(req.user.id);
+      if (!user) return res.status(404).json({ success: false, error: 'User not found' });
       const ledger = await Transaction.find({ userId: req.user.id }).sort({ createdAt: -1 }).limit(30);
       res.json({
         success: true,

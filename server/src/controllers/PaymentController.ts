@@ -70,7 +70,7 @@ export class PaymentController {
 
       // Handle Delivery (Simplified for now, will be fully integrated in the orchestrator later)
       // For now, we mark as success and maybe manually deliver or let a worker handle it.
-      txn.status = 'paid';
+      txn.status = 'success';
       txn.deliveryStatus = 'delivered'; // Assuming instant delivery for this demo
       await txn.save();
 
@@ -100,7 +100,7 @@ export class PaymentController {
         const reference = event.data.reference;
         const txn = await Transaction.findOne({ ref: reference, status: 'pending' });
         if (txn) {
-          txn.status = 'paid';
+          txn.status = 'success';
           await txn.save();
           // Logic for automatic wallet credit or product delivery would go here
         }

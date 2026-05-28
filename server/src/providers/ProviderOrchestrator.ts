@@ -17,7 +17,7 @@ export class ProviderOrchestrator {
   private async getTenantPriority(tenantId: string): Promise<string[]> {
     const tenant = await Tenant.findById(tenantId);
     // Default priority if not configured: Gladtidings -> CheapDataHub -> Jarapoint
-    return tenant?.priorityOrder || ['gladtidings', 'cheapdatahub', 'jarapoint'];
+    return (tenant?.priorityOrder as string[]) || ['gladtidings', 'cheapdatahub', 'jarapoint'];
   }
 
   async executeWithFailover(
@@ -55,7 +55,7 @@ export class ProviderOrchestrator {
       success: false,
       error: 'All available providers failed',
       failReason: 'provider_error',
-      errors
+      data: { errors }
     };
   }
 }

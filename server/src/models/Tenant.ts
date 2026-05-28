@@ -21,6 +21,12 @@ const TenantSchema = new mongoose.Schema({
     default: {}
   },
 
+  // Provider priority order for failover: e.g., ['gladtidings', 'cheapdatahub', 'jarapoint']
+  priorityOrder: {
+    type: [String],
+    default: ['gladtidings', 'cheapdatahub', 'jarapoint']
+  },
+
   status: {
     type: String,
     enum: ['active', 'suspended'],
