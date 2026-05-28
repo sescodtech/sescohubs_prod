@@ -10,6 +10,8 @@ import productRoutes from './routes/productRoutes';
 import superAdminRoutes from './routes/superAdminRoutes';
 import tenantAdminRoutes from './routes/tenantAdminRoutes';
 import myRoutes from './routes/myRoutes';
+import { protect } from './middlewares/authMiddleware';
+import { AuthController } from './controllers/AuthController';
 
 dotenv.config();
 
@@ -20,6 +22,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.get('/api/me', protect, AuthController.me); // Added this for frontend compatibility
 app.use('/api/my', myRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/payment', paymentRoutes);
