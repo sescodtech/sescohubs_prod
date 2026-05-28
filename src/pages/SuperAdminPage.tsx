@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShieldAlert, Users, Building, Activity, DollarSign, Globe, Settings, Lock, Server, BarChart3, Search, MoreVertical, CheckCircle2, XCircle, Plus } from 'lucide-react';
+import { ShieldAlert, Users, Building, Activity, DollarSign, Globe, Settings, Lock, Server, BarChart3, Search, MoreVertical, CheckCircle2, XCircle, Plus, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { admin } from '../lib/api';
