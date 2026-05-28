@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IProvider, Provider la: la } from './IProvider';
+import { IProvider, ProviderResponse } from './IProvider';
 
 const BASE_URL = 'https://www.gladtidingsdata.com/api';
 
