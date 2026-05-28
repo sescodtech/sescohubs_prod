@@ -9,7 +9,7 @@ interface Tenant {
   _id: string;
   name: string;
   slug: string;
-  status: 'Active' | 'Suspended';
+  status: 'active' | 'suspended';
   plan: string;
   usersCount?: number;
 }
@@ -80,7 +80,7 @@ export default function SuperAdminPage() {
   }
 
   const stats = [
-    { label: 'Active Tenants', value: tenants.filter(t => t.status === 'Active').length, change: 'Live', icon: Building, color: 'text-blue-600' },
+    { label: 'Active Tenants', value: tenants.filter(t => t.status === 'active').length, change: 'Live', icon: Building, color: 'text-blue-600' },
     { label: 'Total Platforms', value: tenants.length, change: 'Global', icon: Globe, color: 'text-purple-600' },
     { label: 'System Health', value: '99.9%', change: 'Stable', icon: Server, color: 'text-green-600' },
     { label: 'API Nodes', value: '12', change: 'Active', icon: BarChart3, color: 'text-orange-600' },
@@ -256,9 +256,9 @@ export default function SuperAdminPage() {
                                  <td className="px-8 py-5">
                                     <div className={cn(
                                        "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter",
-                                       t.status === 'Active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                       t.status === 'active' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                                     )}>
-                                       {t.status === 'Active' ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
+                                       {t.status === 'active' ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
                                        {t.status}
                                     </div>
                                  </td>
@@ -400,7 +400,7 @@ export default function SuperAdminPage() {
                        <div className="flex items-center gap-2">
                           <span className={cn(
                              "w-2 h-2 rounded-full",
-                             selectedTenant.status === 'Active' ? "bg-green-500" : "bg-red-500"
+                             selectedTenant.status === 'active' ? "bg-green-500" : "bg-red-500"
                           )} />
                           <span className="font-black text-gray-900">{selectedTenant.status}</span>
                        </div>
@@ -436,7 +436,7 @@ export default function SuperAdminPage() {
                     >
                        Close
                     </button>
-                    {selectedTenant.status === 'Active' ? (
+                    {selectedTenant.status === 'active' ? (
                        <button
                          onClick={() => handleUpdateTenant(selectedTenant._id, { status: 'suspended' })}
                          className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-100 hover:bg-red-700 transition-all flex items-center justify-center gap-2"
