@@ -18,7 +18,8 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tenant',
     required: function() {
-      return (this as any).role !== 'super_admin';
+      const role = (this as any).role;
+      return role === 'tenant_admin';
     }
   },
 
