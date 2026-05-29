@@ -23,9 +23,9 @@ export default function LoginPage() {
   useEffect(() => {
     if (user && !authLoading) {
       if (user.backendRole === 'super_admin') {
-        navigate('/super-admin', { replace: true });
+        navigate('/app/super-admin', { replace: true });
       } else if (user.backendRole === 'tenant_admin') {
-        navigate('/tenant-admin', { replace: true });
+        navigate('/app/tenant-admin', { replace: true });
       } else {
         navigate('/app', { replace: true });
       }
@@ -49,9 +49,9 @@ export default function LoginPage() {
       if (mode === 'login') {
         const user = await login(email, password);
         if (user?.backendRole === 'super_admin') {
-          navigate('/super-admin');
+          navigate('/app/super-admin');
         } else if (user?.backendRole === 'tenant_admin') {
-          navigate('/tenant-admin');
+          navigate('/app/tenant-admin');
         } else {
           navigate('/app');
         }
