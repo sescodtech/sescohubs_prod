@@ -33,6 +33,24 @@ export class TenantAdminController {
     }
   }
 
+  /**
+   * Update a user's status (Active/Suspended)
+   */
+  static async updateUserStatus(req: any, res: Response) {
+    try {
+      const { userId, status } = req.body;
+      const user = await User.findOne({ _id: userId, tenantId: req.user.tenantId });
+      if (!user) throw new Error('User not found in this tenant');
+
+      user.status = status;
+      await user.save();
+
+      res.json({ success: true, message: `User ${status === 'active' ? 'activated' : 'suspended'} successfully`, user });
+    } catch (e: any) {
+      res.status(400).json({ success: false, error: e.message });
+    }
+  }
+
   static async getStats(req: any, res: Response) {
     // In a real app, this would aggregate from the Transaction model
     res.json({

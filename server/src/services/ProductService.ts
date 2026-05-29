@@ -200,10 +200,16 @@ export class ProductService {
   }
 
   static async getCatalog(tenantId: string) {
-    const tenant = await Tenant.findById(tenantId);
-    if (!tenant) throw new Error('Tenant not found');
+    let markups = {};
+    if (tenantId !== 'default') {
+      const tenant = await Tenant.findById(tenantId);
+      if (!tenant) throw new Error('Tenant not found');
+      markups = tenant.markupSettings || {};
+    } else {
+      // Use a global default markup for the main site if no tenant is specified
+      markups = { data: 10, airtime: 5, cable: 10, education: 10, recharge: 5, bills: 10 };
+    }
 
-    const markups = tenant.markupSettings || {};
     const allPlans = await this.getAllPlans();
 
     return allPlans.map(plan => {

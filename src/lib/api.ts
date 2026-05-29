@@ -271,6 +271,8 @@ export const admin = {
   users: () => apiFetch('/api/admin/users', {}, true),
   updateUserRole: (userId: string, role: string) =>
     apiFetch(`/api/admin/users/${userId}/role`, { method: 'PUT', body: JSON.stringify({ role }) }, true),
+  updateUserStatus: (userId: string, status: string) =>
+    apiFetch('/api/admin/users/status', { method: 'PUT', body: JSON.stringify({ userId, status }) }, true),
   getMarkup: () => apiFetch('/api/admin/markup', {}, true),
   setMarkup: (markup: Record<string, number>) =>
     apiFetch('/api/admin/markup', { method: 'PUT', body: JSON.stringify(markup) }, true),
