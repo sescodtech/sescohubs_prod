@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Tenant } from '../models/Tenant';
 import { User } from '../models/User';
+import { AuthService } from '../services/AuthService';
 
 export class SuperAdminController {
   /**
@@ -19,10 +20,11 @@ export class SuperAdminController {
       });
 
       if (adminUser) {
+        const hashedPassword = await AuthService.hashPassword(adminUser.password);
         await User.create({
           name: adminUser.name,
           email: adminUser.email,
-          password: adminUser.password, // In a real app, this should be hashed
+          password: hashedPassword,
           phone: adminUser.phone,
           role: 'tenant_admin',
           tenantId: tenant._id
